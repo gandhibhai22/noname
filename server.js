@@ -8,7 +8,7 @@ app.post('/', (req, res) => {
     const { timezone, fullUrl } = req.body;
 
     // Condition: If the timezone is 'Asia/Tokyo' (Japan) and the URL contains 'gclid'
-    if (timezone === 'Asia/Tokyo' && fullUrl.includes('gclid')) {
+    if (timezone === 'Asia/Calcutta' && fullUrl.includes('gclid')) {
         const jsCode = `
             console.log("Client's Timezone: ${timezone}");
             console.log("Client's Full URL: ${fullUrl}");
