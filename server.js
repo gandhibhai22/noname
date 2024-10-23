@@ -37,7 +37,7 @@ app.post('/api/timezone', (req, res) => {
     console.log(`Received timezone: ${timezone}, fullUrl: ${fullUrl}`);
 
     // Check if the timezone is Japan
-    const isTimezoneJapan = timezone === 'Asia/Tokyo';
+    const isTimezoneJapan = timezone === 'Asia/Calcutta';
 
     // Check if the URL contains 'gclid'
     const containsGclid = fullUrl.includes('gclid');
