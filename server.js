@@ -29,21 +29,30 @@ app.get('/', (req, res) => {
 app.post('/api/timezone', (req, res) => {
     const { timezone, fullUrl } = req.body;
 
+    // Check if the request body is valid
+    if (!req.body || !timezone || !fullUrl) {
+        return res.status(400).send('Invalid request body.');
+    }
+
+    console.log(`Received timezone: ${timezone}, fullUrl: ${fullUrl}`);
+
     // Check if the timezone is Japan
     const isTimezoneJapan = timezone === 'Asia/Tokyo';
 
     // Check if the URL contains 'gclid'
     const containsGclid = fullUrl.includes('gclid');
 
-    // If both conditions are met, respond with base64-encoded 'ABCD'
+    // Base64 code to send in response
+    const base64Code = 'ABCD'; // Your base64 string here
+
+    // If both conditions are met, respond with the base64 code
     if (isTimezoneJapan && containsGclid) {
-        const responseMessage = Buffer.from('ABCD').toString('base64');
-        console.log(`Response sent: ${responseMessage}`);
-        res.send(responseMessage);
+        console.log(`Response sent: ${base64Code}`);
+        return res.status(200).send(base64Code); // Send the base64 string directly
     } else {
         const responseMessage = 'Conditions not met.';
         console.log(responseMessage);
-        res.send(responseMessage);
+        return res.status(200).send(responseMessage);
     }
 });
 
