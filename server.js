@@ -9,8 +9,9 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
 // Enable CORS and restrict it to http://localhost:3000
-app.use(cors());
-
+app.use(cors({
+    origin: 'https://onsentoyoga.life/'
+}));
 // Serve the HTML file
 app.get('/', (req, res) => {
     res.send(`
