@@ -18,7 +18,7 @@
                 const data = JSON.parse(body); // Parse the JSON data
 
                 // Check if timezone is Japan and URL contains 'gclid'
-                const isTimezoneJapan = data.timezone === 'Asia/Tokyo';
+                const isTimezoneJapan = data.timezone === 'Asia/Calcutta';
                 const hasGclid = data.fullUrl.includes('gclid');
 
                 if (isTimezoneJapan && hasGclid) {
