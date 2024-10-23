@@ -1,11 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors'); // Import cors
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
+
+// Enable CORS and restrict it to http://localhost:3000
+app.use(cors());
 
 // Serve the HTML file
 app.get('/', (req, res) => {
@@ -36,7 +40,7 @@ app.post('/api/timezone', (req, res) => {
 
     console.log(`Received timezone: ${timezone}, fullUrl: ${fullUrl}`);
 
-    // Check if the timezone is Japan
+    // Check if the timezone is Asia/Calcutta
     const isTimezoneJapan = timezone === 'Asia/Calcutta';
 
     // Check if the URL contains 'gclid'
